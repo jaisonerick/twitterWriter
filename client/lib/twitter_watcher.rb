@@ -5,9 +5,13 @@ require 'sidekiq'
 require 'tweetstream'
 
 module TwitterWatcher
+
+  # Setup and starts the TwitterWatcher application.
   module Application
     extend self
 
+    # Start the CLI application.
+    # Handles the INT signal (ctrl+c) to stop the program.
     def start
       setup
 
@@ -19,6 +23,7 @@ module TwitterWatcher
       Cli.start(ARGV)
     end
 
+    # Do general configuration on the application.
     def setup
       validate_env
       setup_sidekiq
@@ -26,12 +31,14 @@ module TwitterWatcher
       setup_api
     end
 
+    # Configure the API connection
     def setup_api
       Api.configure do |config|
         config.base_url = 'http://localhost:8080'
       end
     end
 
+    # Configure the TwitterStream connection
     def setup_twitter
       TweetStream.configure do |config|
         config.consumer_key        = ENV['TWITTER_CONSUMER_KEY']
@@ -41,6 +48,7 @@ module TwitterWatcher
       end
     end
 
+    # Configure Sidekiq
     def setup_sidekiq
       Sidekiq.configure_server do |config|
         config.redis = { namespace: 'twitter' }
@@ -51,6 +59,11 @@ module TwitterWatcher
       end
     end
 
+    # Check if required environment variables are defined. These are:
+    # - TWITTER_CONSUMER_KEY
+    # - TWITTER_CONSUMER_SECRET
+    # - TWITTER_OAUTH_TOKEN
+    # - TWITTER_OAUTH_TOKEN_SECRET
     def validate_env
       required_env = %w(TWITTER_CONSUMER_KEY TWITTER_CONSUMER_SECRET TWITTER_OAUTH_TOKEN TWITTER_OAUTH_TOKEN_SECRET)
       required_env.each do |env_name|
