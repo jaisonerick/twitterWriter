@@ -1,5 +1,5 @@
 #!/usr/bin/env ruby
 
-require_relative '../lib/twitterWatcher'
+require_relative '../lib/twitter_watcher'
 
-TwitterWatcher::Application.hello!
+TwitterWatcher::Application.start
